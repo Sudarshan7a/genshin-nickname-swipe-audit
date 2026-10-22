@@ -3,6 +3,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import compression from 'compression';
 import { openDb } from './db.js';
 import { requireInvite, requireAdmin } from './auth.js';
 import { rateLimit } from './rate-limit.js';
@@ -77,6 +78,8 @@ export function createApp(opts = {}) {
   // If the proxy sends no forwarding header this falls back to the socket
   // address, exactly as before.
   app.set('trust proxy', 'loopback');
+  // Gzip the 250KB entities payload for the tunnel and mobile friends.
+  app.use(compression());
   app.use(express.json({ limit: '64kb' }));
 
   app.get('/api/health', (_req, res) => {
