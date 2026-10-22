@@ -1,0 +1,81 @@
+/* Token system — Concept C dark editorial. Every color/size comes from here. */
+:root {
+  --bg: #0b0a08;
+  --surface: #141210;
+  --ink: #f2ede3;
+  --dim: #a39a89;
+  --ember: #ff5a2a;
+  --gold: #ffb03a;
+  --heard: #8fd18a;
+  --never: #ff7a6b;
+  --unsure: #8fb4cc;
+  --rule: #2a251d;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* Ember light + grain — the two signature layers, nothing else glows */
+.app-atmosphere::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(60% 45% at 70% 18%, rgba(255, 90, 42, 0.14), transparent 70%);
+}
+.app-atmosphere::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+}
+
+button, a, [role='button'] {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input, textarea, select {
+  font-size: 16px; /* iOS zoom floor */
+}
+
+:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 2px;
+}
+
+/* Commit stamp slam — from scale(0.95), never 0; exits beat entrances */
+@keyframes stamp-in {
+  from { opacity: 0; transform: scale(0.95) rotate(-8deg); }
+  to { opacity: 1; transform: scale(1) rotate(-8deg); }
+}
+.stamp-in { animation: stamp-in 180ms var(--ease-out) both; }
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise-in { animation: rise-in 400ms var(--ease-out) both; }
+
+@media (hover: hover) and (pointer: fine) {
+  .hoverable:hover { background: #1c1915; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp-in, .rise-in { animation: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+}
