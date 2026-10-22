@@ -1,6 +1,6 @@
 # DATA-NOTES — ingest conflict resolutions
 
-Generated 2026-10-22T10:56:03.206Z by `scripts/ingest.mjs`. Newer/corrective sources win on overlap; nothing was invented (missing → null). Nickname id = sha1(entityId + '::' + normalized text)[0:16]; normalized = lowercase, single-spaced, trimmed. Re-running ingest never deletes votes: votes key on nickname id.
+Generated 2026-10-22T11:00:51.039Z by `scripts/ingest.mjs`. Newer/corrective sources win on overlap; nothing was invented (missing → null). Nickname id = sha1(entityId + '::' + normalized text)[0:16]; normalized = lowercase, single-spaced, trimmed. Re-running ingest never deletes votes: votes key on nickname id.
 
 ## Entity IDs
 
@@ -10,7 +10,7 @@ Generated 2026-10-22T10:56:03.206Z by `scripts/ingest.mjs`. Newer/corrective sou
 ## Resolutions (every conflict)
 
 - **emilie / escoffier have zero research coverage**: created as entities with zero nicknames (display names fall back to prettified keys); they enter the "Help us find names" queue. No names invented.
-- **character sections with no usable candidates (24)** → zero-nickname help-queue entities: aino, aloy, alyosha, amber, charlotte, chasca, chiori, dahlia, emilie, escoffier, flins, gorou, iansan, illuga, kaeya, lauma, linnea, lohen, lyney, manekin, manekina, odette, xiao, yunjin.
+- **character sections with no usable candidates (26)** → zero-nickname help-queue entities: aether, aino, aloy, alyosha, amber, charlotte, chasca, chiori, dahlia, emilie, escoffier, flins, gorou, iansan, illuga, kachina, kaeya, lauma, linnea, lohen, lyney, manekin, manekina, odette, xiao, yunjin.
 - **title/lore/official-name rows excluded, never ingested as nicknames** (e.g. Traveler for aether, Tianquan for ningguang, Lelek for odette, Amy/full-name rows, yunjin/zibai title tables, Divine Priestess for kokomi).
 - **corrective-silken-song is additive**: SMS/[Silken Moon] added to silkenmoonsserenade, SDP/SoDP added to songofdayspast; nothing replaced.
 - **batch-6 misnumbering resolved by Exact key, never by heading number**: headings 51–60 mapped to true keys tenacityofthemillelith…vermillionhereafter + wandererstroupe (true 53–61,63).
@@ -19,6 +19,7 @@ Generated 2026-10-22T10:56:03.206Z by `scripts/ingest.mjs`. Newer/corrective sou
 - **weapons precedence: union, not replacement**. All 26 batch JSONs + recheck + original report unioned per key; every nickname kept with its file in provenance and its own researchConfidence ("preliminary" stays "preliminary"); identical normalized texts dedupe, keeping all sources. Voting decides.
 - **calamityofeshu / CoE**: recheck says found-preliminary (snippet only, Cache miss) while batch-04 says not stated → kept as a separate preliminary candidate (provenance: recheck).
 - **beyondthechrysalis / chrysalis**: original report has no section; recheck says not stated; batch-03 says found ("working towards R5 Chrysalis") → kept as a medium candidate (provenance: weapons-batch-03.json).
+- **lumine thread cross-references excluded**: "Windy Man"/"Windblade" must-not-map to Lumine (they refer to Aether in the joke thread) and are not in aether's candidate evidence either — excluded from both, left for human review; "Windy Woman character" is declared not-a-separate-alias of "Windy Woman" and excluded.
 - **weapons keys where sources attest DIFFERENT nickname texts (24)** — all kept as separate candidates:
   - cashflowsupervision: Cashflow Blackhole · cashflow
   - favoniuscodex: Fav Codex · Fav

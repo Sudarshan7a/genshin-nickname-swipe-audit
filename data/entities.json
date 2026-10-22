@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-22T10:56:03.203Z",
+  "generatedAt": "2026-10-22T11:00:51.036Z",
   "counts": {
     "character": 124,
     "weapon": 255,
@@ -12,23 +12,7 @@
       "type": "character",
       "name": "Aether",
       "imageUrl": null,
-      "nicknames": [
-        {
-          "id": "35d4078d3d07887c",
-          "text": "Traveler",
-          "sourceUrl": "https://www.reddit.com/r/Genshin_Impact/comments/1t1o01p/why_isnt_account_name_and_traveler_name_separate/",
-          "sources": [
-            "https://www.reddit.com/r/Genshin_Impact/comments/1t1o01p/why_isnt_account_name_and_traveler_name_separate/",
-            "https://www.reddit.com/r/Genshin_Impact/comments/slun39",
-            "https://www.reddit.com/r/Genshin_Impact/comments/1xac231/what_nicknames_or_shorthand_do_you_use_when/"
-          ],
-          "quote": null,
-          "researchConfidence": "high",
-          "provenance": [
-            "character/character-nickname-research-batch-1.md"
-          ]
-        }
-      ]
+      "nicknames": []
     },
     {
       "id": "character:aino",
@@ -2001,23 +1985,7 @@
       "type": "character",
       "name": "Kachina",
       "imageUrl": null,
-      "nicknames": [
-        {
-          "id": "c04c389ae0ca3f5c",
-          "text": "Twirly",
-          "sourceUrl": "https://genshin.hoyoverse.com/en/news/detail/125462",
-          "sources": [
-            "https://genshin.hoyoverse.com/en/news/detail/125462",
-            "https://genshin-impact.fandom.com/wiki/Kachina",
-            "https://keqingmains.com/q/kachina-quickguide/"
-          ],
-          "quote": null,
-          "researchConfidence": "medium",
-          "provenance": [
-            "character/character-nickname-research-batch-5.md"
-          ]
-        }
-      ]
+      "nicknames": []
     },
     {
       "id": "character:kaedeharakazuha",
@@ -2959,53 +2927,8 @@
       "imageUrl": null,
       "nicknames": [
         {
-          "id": "8abd331e9b260036",
-          "text": "Windblade",
-          "sourceUrl": "https://www.hoyolab.com/article/23723144",
-          "sources": [
-            "https://www.hoyolab.com/article/23723144",
-            "https://www.reddit.com/r/Genshin_Impact/comments/15hxaou",
-            "https://www.hoyolab.com/article/5748582"
-          ],
-          "quote": null,
-          "researchConfidence": "unknown",
-          "provenance": [
-            "character/character-nickname-research-batch-7.md"
-          ]
-        },
-        {
-          "id": "5a168bae11c9aa82",
-          "text": "Windy Man",
-          "sourceUrl": "https://www.hoyolab.com/article/23723144",
-          "sources": [
-            "https://www.hoyolab.com/article/23723144",
-            "https://www.reddit.com/r/Genshin_Impact/comments/15hxaou",
-            "https://www.hoyolab.com/article/5748582"
-          ],
-          "quote": null,
-          "researchConfidence": "unknown",
-          "provenance": [
-            "character/character-nickname-research-batch-7.md"
-          ]
-        },
-        {
           "id": "d1e49899d72f88f1",
           "text": "Windy Woman",
-          "sourceUrl": "https://www.hoyolab.com/article/23723144",
-          "sources": [
-            "https://www.hoyolab.com/article/23723144",
-            "https://www.reddit.com/r/Genshin_Impact/comments/15hxaou",
-            "https://www.hoyolab.com/article/5748582"
-          ],
-          "quote": null,
-          "researchConfidence": "unknown",
-          "provenance": [
-            "character/character-nickname-research-batch-7.md"
-          ]
-        },
-        {
-          "id": "60ed201036346122",
-          "text": "Windy Woman character",
           "sourceUrl": "https://www.hoyolab.com/article/23723144",
           "sources": [
             "https://www.hoyolab.com/article/23723144",
@@ -3593,21 +3516,6 @@
       "name": "Nilou",
       "imageUrl": null,
       "nicknames": [
-        {
-          "id": "e6db39cae67c0a0f",
-          "text": "Fish",
-          "sourceUrl": "https://www.reddit.com/r/Genshin_Impact/comments/15o6qs4",
-          "sources": [
-            "https://www.reddit.com/r/Genshin_Impact/comments/15o6qs4",
-            "https://www.hoyolab.com/article/25198232",
-            "https://www.hoyolab.com/article/30331857"
-          ],
-          "quote": null,
-          "researchConfidence": "unknown",
-          "provenance": [
-            "character/character-nickname-research-batch-8.md"
-          ]
-        },
         {
           "id": "162464042dbc0d42",
           "text": "Nirou",
@@ -5176,28 +5084,6 @@
           "provenance": [
             "character/character-nickname-research-batch-12.md"
           ]
-        },
-        {
-          "id": "a287bc546d9fc30c",
-          "text": "Te-chan",
-          "sourceUrl": null,
-          "sources": [],
-          "quote": null,
-          "researchConfidence": "unknown",
-          "provenance": [
-            "character/character-nickname-research-batch-12.md"
-          ]
-        },
-        {
-          "id": "6efdabaa935099eb",
-          "text": "Ya-chan",
-          "sourceUrl": null,
-          "sources": [],
-          "quote": null,
-          "researchConfidence": "unknown",
-          "provenance": [
-            "character/character-nickname-research-batch-12.md"
-          ]
         }
       ]
     },
@@ -5279,40 +5165,8 @@
           ]
         },
         {
-          "id": "b79e0afcd8c6f35c",
-          "text": "Geo Daddy 2",
-          "sourceUrl": "https://www.hoyolab.com/article/138758",
-          "sources": [
-            "https://www.hoyolab.com/article/138758",
-            "https://www.reddit.com/r/Genshin_Impact/comments/pa1wh4/without_telling_me_the_names_of_your_party/",
-            "https://www.reddit.com/r/Genshin_Memepact/comments/n5bw8t",
-            "https://www.reddit.com/r/Genshin_Impact/comments/lemz35"
-          ],
-          "quote": null,
-          "researchConfidence": "medium",
-          "provenance": [
-            "character/character-nickname-research-batch-13.md"
-          ]
-        },
-        {
           "id": "58c51fecfda0eabf",
           "text": "Long Schlongli Zhongli",
-          "sourceUrl": "https://www.hoyolab.com/article/138758",
-          "sources": [
-            "https://www.hoyolab.com/article/138758",
-            "https://www.reddit.com/r/Genshin_Impact/comments/pa1wh4/without_telling_me_the_names_of_your_party/",
-            "https://www.reddit.com/r/Genshin_Memepact/comments/n5bw8t",
-            "https://www.reddit.com/r/Genshin_Impact/comments/lemz35"
-          ],
-          "quote": null,
-          "researchConfidence": "medium",
-          "provenance": [
-            "character/character-nickname-research-batch-13.md"
-          ]
-        },
-        {
-          "id": "461d40e1c660b80e",
-          "text": "new Geo Daddy",
           "sourceUrl": "https://www.hoyolab.com/article/138758",
           "sources": [
             "https://www.hoyolab.com/article/138758",

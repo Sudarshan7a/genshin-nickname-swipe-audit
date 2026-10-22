@@ -251,9 +251,11 @@ function parseCharacterSections(files, keySet) {
         if (cm) { sectionConf = collapseConfidence(cm[1]); break; }
       }
       // exclusion mining: do-not-promote / not-a-community-nickname sentences
+      // (strip bold markers first: researchers write "Do **not** promote")
       const excluded = new Set();
       for (const sent of s.body.split(/(?<=[.!?])\s+/)) {
-        if (/do not promote/i.test(sent) || /not (?:the |a )?community[- ]?nickname/i.test(sent)) {
+        const plain = sent.replace(/\*/g, '');
+        if (/do not promote/i.test(plain) || /not (?:the |a )?community[- ]?nickname/i.test(plain)) {
           for (const t of quotedTerms(sent)) excluded.add(normalizeNicknameText(t));
         }
       }
@@ -277,7 +279,7 @@ function parseCharacterSections(files, keySet) {
           const confIdx = t.header.findIndex((c) => /confiden/i.test(c));
           for (const row of t.rows) {
             const rowText = row.join(' | ');
-            if (/not a nickname/i.test(rowText)) continue;
+            if (/not a nickname|not a separate alias|must not be mapped|do not map/i.test(rowText)) continue;
             if (classIdx >= 0 && CLASS_EXCLUDE.test(row[classIdx] || '')) continue;
             const notesIdx = t.header.findIndex((c) => /note/i.test(c));
             if (notesIdx >= 0 && /not a nickname|not a stable|do not label/i.test(row[notesIdx] || '')) continue;
@@ -304,7 +306,7 @@ function parseCharacterSections(files, keySet) {
             }
             if (isFieldLabel(b[1]) || b[1].length > 40 || /[.!?]$/.test(b[1].trim())) continue;
             const lab = (b[2].match(/\*\*(.+?)\*\*/) || [])[1] || '';
-            if (/not a nickname/i.test(lab) || /not a nickname/i.test(b[2])) continue;
+            if (/not a nickname|not a separate alias|must not be mapped|do not map/i.test(lab) || /not a nickname|not a separate alias|must not be mapped|do not map/i.test(b[2])) continue;
             keep(b[1], collapseConfidence(lab || sectionConf));
             continue;
           }
@@ -392,7 +394,7 @@ function parseArtifactSections(files, keySet) {
           const confIdx = t.header.findIndex((c) => /evidence status|confidence/i.test(c));
           for (const row of t.rows) {
             const rowText = row.join(' | ');
-            if (/not a nickname|too generic|explicitly rejected/i.test(rowText)) continue;
+            if (/not a nickname|too generic|explicitly rejected|not a separate alias|must not be mapped/i.test(rowText)) continue;
             const termCell = (row[0] || '').replace(/`/g, '').replace(/\*\*/g, '').trim();
             if (!termCell || /^(candidate|exact)/i.test(termCell)) continue;
             keep(termCell, collapseConfidence(confIdx >= 0 ? (row[confIdx] || sectionConf) : sectionConf));
@@ -576,6 +578,7 @@ function main() {
   log(`- **weapons precedence: union, not replacement**. All 26 batch JSONs + recheck + original report unioned per key; every nickname kept with its file in provenance and its own researchConfidence ("preliminary" stays "preliminary"); identical normalized texts dedupe, keeping all sources. Voting decides.`);
   log(`- **calamityofeshu / CoE**: recheck says found-preliminary (snippet only, Cache miss) while batch-04 says not stated → kept as a separate preliminary candidate (provenance: recheck).`);
   log(`- **beyondthechrysalis / chrysalis**: original report has no section; recheck says not stated; batch-03 says found ("working towards R5 Chrysalis") → kept as a medium candidate (provenance: weapons-batch-03.json).`);
+  log(`- **lumine thread cross-references excluded**: "Windy Man"/"Windblade" must-not-map to Lumine (they refer to Aether in the joke thread) and are not in aether's candidate evidence either — excluded from both, left for human review; "Windy Woman character" is declared not-a-separate-alias of "Windy Woman" and excluded.`);
   const disagree = [];
   for (const key of wpnKeySet) {
     const texts = new Set();

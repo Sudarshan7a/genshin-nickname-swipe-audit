@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
 import Gate from './components/Gate.jsx';
 import EntityHeader from './components/EntityHeader.jsx';
 import CardStack from './components/CardStack.jsx';
@@ -347,19 +346,17 @@ export default function App() {
                   shortDeck={nicknames.length <= 2}
                 />
               ) : card ? (
-                <AnimatePresence mode="wait">
-                  <CardStack
-                    key={card.id}
-                    card={card}
-                    existingAnswer={voteStatus(card.id, votesById)}
-                    blind={blind}
-                    exitDir={exitDir}
-                    onCommit={commit}
-                    onSkip={skip}
-                    canUndo={history.length > 0}
-                    onUndo={undo}
-                  />
-                </AnimatePresence>
+                <CardStack
+                  key={card.id}
+                  card={card}
+                  existingAnswer={voteStatus(card.id, votesById)}
+                  blind={blind}
+                  exitDir={exitDir}
+                  onCommit={commit}
+                  onSkip={skip}
+                  canUndo={history.length > 0}
+                  onUndo={undo}
+                />
               ) : null}
               {pendingCount > 0 ? (
                 <p className="queue-note" role="status">
