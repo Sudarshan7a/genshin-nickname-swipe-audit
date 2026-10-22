@@ -1,6 +1,6 @@
 // npm run share — server + opentunnel together. Reads codes from env/.env.
 // Never prints secret codes. Prints the public URL on boot.
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -57,6 +57,16 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
 run('node', ['server/index.js'], 'app');
-run('opentunnel', ['serve'], 'tunnel');
+try {
+  const st = spawnSync('opentunnel', ['service', 'status'], { encoding: 'utf8', shell: process.platform === 'win32' });
+  const alreadyUp = st.status === 0 && /running/i.test(String(st.stdout) + String(st.stderr));
+  if (alreadyUp) {
+    console.log('share: opentunnel background service already running — routes stay live, not starting a second tunnel.');
+  } else {
+    run('opentunnel', ['serve'], 'tunnel');
+  }
+} catch {
+  run('opentunnel', ['serve'], 'tunnel');
+}
 console.log(`share: app on 127.0.0.1:${PORT}, public URL ${PUBLIC_URL}`);
 console.log('share: press Ctrl+C to stop both.');

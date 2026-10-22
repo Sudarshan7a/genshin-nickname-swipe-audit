@@ -253,10 +253,10 @@ const invokedAsMain =
 
 if (invokedAsMain) {
   const dbPath = process.env.VOTES_DB ?? path.join(root, 'data', 'votes.db');
+  const app = createApp({ dbPath });
   if (process.env.SKIP_BACKUP !== '1') {
     startBackups(dbPath, path.join(root, 'backups'));
   }
-  const app = createApp({ dbPath });
   const PORT = Number(process.env.PORT || 3000);
   app.listen(PORT, () => {
     console.log(`nickname-swipe listening on :${PORT}`);
