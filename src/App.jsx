@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Gate from './components/Gate.jsx';
 import EntityHeader from './components/EntityHeader.jsx';
 import CardStack from './components/CardStack.jsx';
-import Tray from './components/Tray.jsx';
+import NameRoster from './components/NameRoster.jsx';
+import AddName from './components/AddName.jsx';
 import Summary from './components/Summary.jsx';
 import HelpQueue from './components/HelpQueue.jsx';
 import Admin from './components/Admin.jsx';
@@ -58,6 +59,7 @@ export default function App() {
   const [streak, setStreak] = useState(() => getStreak());
   const [soundOn, setSound] = useState(() => isSoundOn());
   const [pendingCount, setPendingCount] = useState(() => loadQueue().length);
+  const [announcement, setAnnouncement] = useState('');
 
   useEffect(() => {
     const onHash = () => setHash(window.location.hash);
@@ -171,22 +173,36 @@ export default function App() {
     }
   }
 
-  function commit(answer) {
-    if (!card || !entity) return;
-    const prev = voteStatus(card.id, votesById) || null;
-    setHistory((h) => [...h, { nicknameId: card.id, prev, pos: safePos }]);
-    const next = applyVoteOptimistic(votesById, card.id, answer);
+  const ANSWER_SPOKEN = { heard: 'heard it', never: 'never heard it', unsure: 'not sure' };
+
+  // Single vote path for the main card: drag, keys, and the
+  // Never / Not sure / Heard buttons are the same action with the same
+  // undo and the same announcement. The right-column roster is display-only.
+  function castVote(nickname, answer) {
+    if (!entity || !nickname) return;
+    const prev = voteStatus(nickname.id, votesById) || null;
+    setHistory((h) => [...h, { nicknameId: nickname.id, prev, pos: safePos, entityId: entity.id }]);
+    const next = applyVoteOptimistic(votesById, nickname.id, answer);
     setVotesById(next);
     saveLocalVotes(next);
     recordVoteDay();
     setStreak(getStreak());
     tick(answer);
-    persist('vote', { nicknameId: card.id, entityId: entity.id, answer });
-    const idx = nextUnvoted(nicknames, next, safePos + 1);
-    window.setTimeout(() => {
-      if (idx === -1) setPos(nicknames.length);
-      else setPos(idx);
-    }, 180);
+    persist('vote', { nicknameId: nickname.id, entityId: entity.id, answer });
+    setAnnouncement(`${nickname.text} — ${ANSWER_SPOKEN[answer]}.`);
+    // Only the focused card advances the cursor. Voting a roster row leaves
+    // the card where it is so the list does not jump under the finger.
+    if (card && nickname.id === card.id) {
+      const idx = nextUnvoted(nicknames, next, safePos + 1);
+      window.setTimeout(() => {
+        setPos(idx === -1 ? nicknames.length : idx);
+      }, 180);
+    }
+  }
+
+  function commit(answer) {
+    if (!card) return;
+    castVote(card, answer);
   }
 
   function skip() {
@@ -197,11 +213,30 @@ export default function App() {
     else setPos(idx);
   }
 
+  // Picking a roster name puts it on the card. On phones the card sits above
+  // the roster, so bring it back into view.
+  function focusRow(i) {
+    setPos(i);
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+      window.requestAnimationFrame(() => {
+        document.querySelector('[data-testid="card"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+
+  // Step past the whole record without answering it.
+  function skipRecord() {
+    if (!entity) return;
+    setAnnouncement(`Skipped ${entity.name}.`);
+    nextEntity();
+  }
+
   function undo() {
     setHistory((h) => {
       if (h.length === 0) return h;
       const last = h[h.length - 1];
-      if (last.nicknameId) {
+      const owner = last.entityId || (entity ? entity.id : null);
+      if (last.nicknameId && owner) {
         const next = last.prev
           ? applyVoteOptimistic(votesById, last.nicknameId, last.prev)
           : (() => {
@@ -211,8 +246,8 @@ export default function App() {
             })();
         setVotesById(next);
         saveLocalVotes(next);
-        if (last.prev) persist('vote', { nicknameId: last.nicknameId, entityId: entity.id, answer: last.prev });
-        else persist('retract', { nicknameId: last.nicknameId, entityId: entity.id });
+        if (last.prev) persist('vote', { nicknameId: last.nicknameId, entityId: owner, answer: last.prev });
+        else persist('retract', { nicknameId: last.nicknameId, entityId: owner });
       }
       setPos(last.pos);
       return h.slice(0, -1);
@@ -240,6 +275,16 @@ export default function App() {
     );
   }
 
+  if (isAdminRoute) {
+    return (
+      <div className="app-atmosphere min-h-dvh bg-bg text-ink">
+        <main className="mx-auto max-w-[1440px] px-4 py-5 md:px-8 md:py-8">
+          <Admin />
+        </main>
+      </div>
+    );
+  }
+
   if (!code) {
     return (
       <div className="app-atmosphere min-h-dvh bg-bg text-ink">
@@ -252,20 +297,21 @@ export default function App() {
 
   return (
     <div className="app-atmosphere min-h-dvh bg-bg pb-10 text-ink">
-      <main className="mx-auto max-w-6xl px-4 pt-3 md:px-6">
-        <div role="progressbar" aria-valuenow={doneCount} aria-valuemin={0} aria-valuemax={filtered.length} aria-label="Deck progress" className="mb-3 flex items-center gap-3">
+      <main className="mx-auto max-w-[1440px] px-4 pt-4 md:px-8 md:pt-8">
+        <div role="progressbar" aria-valuenow={doneCount} aria-valuemin={0} aria-valuemax={filtered.length} aria-label="Deck progress" className="deck-progress mb-3 flex items-center gap-3">
           <div className="h-[3px] flex-1 bg-rule">
             <div className="h-full bg-ember transition-all" style={{ width: filtered.length ? `${(100 * doneCount) / filtered.length}%` : '0%' }} />
           </div>
           <span className="font-shout text-xs tracking-[0.15em] text-dim">{doneCount}/{filtered.length} ✓</span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pb-4">
-          <span className="font-shout text-lg tracking-wide">NICKNAME SWIPE</span>
-          <button type="button" onClick={signOut} className="ml-auto min-h-[44px] px-2 text-[0.72rem] uppercase tracking-[0.18em] text-dim underline">
+        <div className="field-topbar flex flex-wrap items-center gap-x-4 gap-y-1 pb-4">
+          <a href="#/" className="font-shout text-lg tracking-wide">TEYVAT FIELD NOTES</a>
+          <a href="#/admin" className="ml-auto min-h-[44px] px-3 py-3 text-[0.72rem] uppercase tracking-[0.12em] text-dim">Admin</a>
+          <button type="button" onClick={signOut} className="min-h-[44px] px-2 text-[0.72rem] uppercase tracking-[0.12em] text-dim underline">
             Sign out
           </button>
-          <span className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 text-[0.72rem] font-bold uppercase tracking-[0.18em] text-dim">
+          <span className="field-utility flex w-full flex-wrap items-center gap-x-4 gap-y-1 text-[0.72rem] font-bold uppercase tracking-[0.18em] text-dim">
             <span>{streak}-day streak</span>
             <button type="button" onClick={toggleSound} aria-pressed={soundOn} title={soundOn ? 'Sound on' : 'Sound off'} className="min-h-[44px]">
               Sound {soundOn ? 'on' : 'off'}
@@ -276,9 +322,9 @@ export default function App() {
           </span>
         </div>
 
-        {isAdminRoute ? (
-          <Admin authFetch={authFetch} />
-        ) : mode === 'help' ? (
+        <p className="sr-only" role="status" aria-live="polite">{announcement}</p>
+
+        {mode === 'help' ? (
           <HelpQueue entities={helpList} authFetch={authFetch} />
         ) : loadError ? (
           <div role="alert" data-testid="error" className="border border-never p-6">
@@ -290,8 +336,8 @@ export default function App() {
         ) : !entity ? (
           <p data-testid="empty" className="border border-rule p-6 text-dim">No entries match. Try another search or filter.</p>
         ) : (
-          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[220px_minmax(0,1fr)_250px] lg:gap-6">
-            <aside aria-label="Entry browser" className="order-1">
+          <div className="voting-layout flex flex-col gap-4 lg:grid lg:grid-cols-[210px_minmax(0,1fr)_320px] lg:gap-6">
+            <aside aria-label="Entry browser" className="entry-browser order-1">
               <div role="group" aria-label="Filter entries" className="flex flex-wrap gap-2">
                 {FILTERS.map((f) => (
                   <button
@@ -329,23 +375,10 @@ export default function App() {
               </ol>
             </aside>
 
-            <div className="order-2">
-              {!complete ? (
-                <EntityHeader entity={entity} index={Math.min(entityIdx, filtered.length - 1)} blind={blind} onToggleBlind={toggleBlind} />
-              ) : null}
+            <div className="voting-column order-2">
+              <EntityHeader entity={entity} index={Math.min(entityIdx, filtered.length - 1)} blind={blind} onToggleBlind={toggleBlind} />
               <div className="mt-4">
-                {complete ? (
-                  <Summary
-                    entity={entity}
-                    votesById={votesById}
-                    onRevisit={setPos}
-                    onNext={nextEntity}
-                    hasNext={entityIdx + 1 < filtered.length}
-                    authFetch={authFetch}
-                    onSuggested={() => {}}
-                    shortDeck={nicknames.length <= 2}
-                  />
-                ) : card ? (
+                {!complete && card ? (
                   <CardStack
                     key={card.id}
                     card={card}
@@ -353,10 +386,39 @@ export default function App() {
                     blind={blind}
                     onCommit={commit}
                     onSkip={skip}
-                    canUndo={history.length > 0}
                     onUndo={undo}
                   />
                 ) : null}
+                {complete ? (
+                  <Summary
+                    entity={entity}
+                    votedCount={answeredCount}
+                    totalCount={nicknames.length}
+                    onNext={nextEntity}
+                    hasNext={entityIdx + 1 < filtered.length}
+                  />
+                ) : null}
+                <AddName
+                  entityId={entity.id}
+                  entityName={entity.name}
+                  authFetch={authFetch}
+                  defaultOpen={false}
+                />
+                <div className="record-actions">
+                  <button
+                    type="button"
+                    className="record-action"
+                    onClick={undo}
+                    disabled={history.length === 0}
+                  >
+                    Undo last
+                  </button>
+                  {complete ? null : (
+                    <button type="button" className="record-action" onClick={skipRecord}>
+                      Skip {entity.type} →
+                    </button>
+                  )}
+                </div>
                 {pendingCount > 0 ? (
                   <p role="status" className="mt-3 text-[0.85rem] text-gold">
                     {pendingCount} vote{pendingCount === 1 ? '' : 's'} waiting to sync — saved on this device.
@@ -365,10 +427,16 @@ export default function App() {
               </div>
             </div>
 
-            <div className="order-3">
-              <p className="mb-2 font-shout text-xs tracking-[0.2em] text-dim">THIS RECORD, SO FAR</p>
-              <Tray nicknames={nicknames} votesById={votesById} activeIndex={complete ? -1 : safePos} onSelect={setPos} />
-              <p className="mt-2 hidden text-[0.8rem] text-dim lg:block">← never · ↑ unsure · → heard · Z undo</p>
+            <div className="record-column order-3">
+              <NameRoster
+                nicknames={nicknames}
+                votesById={votesById}
+                activeId={complete || !card ? null : card.id}
+                onFocus={focusRow}
+              />
+              <p className="mt-2 hidden text-[0.8rem] text-dim lg:block">
+                Tap a name to put it on the card.
+              </p>
             </div>
           </div>
         )}

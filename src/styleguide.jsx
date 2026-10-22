@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { VoteButton, ActionButton } from './components/ui/button.jsx';
-import { TrayChip } from './components/ui/chip.jsx';
 import { Stamp } from './components/ui/stamp.jsx';
 import { Field } from './components/ui/field.jsx';
 
-// /styleguide (hash route): every primitive + every state, one screen.
 const SWATCHES = [
-  ['bg', '#0b0a08'], ['surface', '#141210'], ['ink', '#f2ede3'], ['dim', '#a39a89'],
-  ['ember', '#ff5a2a'], ['gold', '#ffb03a'], ['heard', '#8fd18a'],
-  ['never', '#ff7a6b'], ['unsure', '#8fb4cc'], ['rule', '#2a251d'],
+  ['deep slate', '#111a20'], ['surface', '#19252c'], ['text', '#eeeae0'], ['secondary', '#b5c2c2'],
+  ['jade', '#73c8a9'], ['progression gold', '#e4c56f'], ['heard', '#9acdb5'],
+  ['never', '#dfa49a'], ['unsure', '#a5bfd2'], ['separator', '#35464d'],
 ];
 
 export default function Styleguide() {
@@ -16,82 +14,71 @@ export default function Styleguide() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-10 px-5 py-10">
       <header>
-        <p className="text-[0.72rem] font-bold uppercase tracking-[0.28em] text-dim">Field record · primitives</p>
-        <h1 className="font-shout text-5xl leading-none">STYLEGUIDE</h1>
-        <p className="font-whisper text-xl italic text-dim">shout with Anton, whisper with Cormorant</p>
+        <a href="#/" className="font-shout text-lg uppercase tracking-[.08em]">Teyvat Field Notes</a>
+        <h1 className="mt-5 font-shout text-5xl leading-none">INTERFACE KIT</h1>
+        <p className="mt-2 max-w-[60ch] text-dim">Game archive surfaces, clear voting controls, and readable field notes.</p>
       </header>
 
       <section>
-        <h2 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.28em] text-ember">01 · Tokens</h2>
-        <div className="grid grid-cols-5 gap-px border border-rule bg-rule">
-          {SWATCHES.map(([name, hex]) => (
-            <div key={name} className="bg-bg p-3">
-              <span className="block h-10 w-full border border-rule" style={{ background: hex }} />
-              <span className="mt-1 block text-[0.7rem] text-dim">{name}</span>
-              <span className="block text-[0.7rem] text-ink">{hex}</span>
-            </div>
-          ))}
+        <h2 className="mb-3 text-sm font-bold uppercase tracking-[.14em] text-gold">Color system</h2>
+        <div className="grid grid-cols-2 gap-px border border-rule bg-rule sm:grid-cols-5">
+          {SWATCHES.map(([name, hex]) => <div key={name} className="bg-bg p-3"><span className="block h-10 w-full border border-rule" style={{ background: hex }} /><span className="mt-2 block text-xs text-dim">{name}</span><span className="text-xs text-ink">{hex}</span></div>)}
         </div>
       </section>
 
       <section>
-        <h2 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.28em] text-ember">02 · Vote buttons</h2>
-        <div className="grid grid-cols-3 gap-px border border-rule bg-rule">
-          <VoteButton variant="never">Never</VoteButton>
-          <VoteButton variant="unsure">Not sure</VoteButton>
-          <VoteButton variant="heard">Heard →</VoteButton>
-        </div>
-        <div className="mt-2 grid grid-cols-3 gap-px border border-rule bg-rule opacity-60">
-          <VoteButton variant="never" disabled>Never</VoteButton>
-          <VoteButton variant="unsure" disabled>Not sure</VoteButton>
-          <VoteButton variant="heard" disabled>Heard →</VoteButton>
-        </div>
-        <p className="mt-1 text-[0.82rem] text-dim">top row live · bottom row disabled</p>
+        <h2 className="mb-3 text-sm font-bold uppercase tracking-[.14em] text-gold">Nickname vote</h2>
+        <div className="swipe-card"><p className="text-dim">Have you heard this name?</p><p className="mt-3 font-shout text-5xl">WALNUT</p><p className="mt-2 text-sm text-dim">Answer directly or use left, up, and right arrow keys.</p></div>
+        <div className="mt-2 grid grid-cols-3 gap-px border border-rule bg-rule"><VoteButton variant="never"><span aria-hidden="true" className="vote-glyph">✕</span> Never</VoteButton><VoteButton variant="unsure"><span aria-hidden="true" className="vote-glyph">–</span> Not sure</VoteButton><VoteButton variant="heard"><span aria-hidden="true" className="vote-glyph">✓</span> Heard</VoteButton></div>
       </section>
 
       <section>
-        <h2 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.28em] text-ember">03 · Actions</h2>
-        <div className="flex flex-wrap gap-3">
-          <ActionButton>Log it for review</ActionButton>
-          <VoteButton variant="ghost">Skip</VoteButton>
-          <VoteButton variant="ghost" disabled>Undo (empty)</VoteButton>
+        <h2 className="mb-3 text-sm font-bold uppercase tracking-[.14em] text-gold">Actions and record states</h2>
+        <div className="flex flex-wrap items-center gap-3"><ActionButton>Log for review</ActionButton><VoteButton variant="ghost">Skip</VoteButton><VoteButton variant="ghost" disabled>Undo</VoteButton><button type="button" onClick={() => setSlammed((s) => !s)} className="border border-rule p-3"><Stamp tone="heard" slam={slammed} key={`heard-${slammed}`}>Heard</Stamp></button></div>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-sm font-bold uppercase tracking-[.14em] text-gold">Every name on a record</h2>
+        <p className="mb-3 text-sm text-dim">Display-only ledger. Voting lives on the main card above.</p>
+        <div className="roster">
+          <header className="roster-head">
+            <h3 className="roster-title">All 3 names</h3>
+            <p className="roster-tally">1 of 3 logged</p>
+          </header>
+          <ol className="roster-list">
+            <li className="roster-row" data-active="true">
+              <div className="roster-row-head">
+                <span className="roster-index">01</span>
+                <span className="roster-name">Walnut</span>
+                <span className="roster-mark text-heard" aria-hidden="true">✓</span>
+              </div>
+            </li>
+            <li className="roster-row" data-active="false">
+              <div className="roster-row-head">
+                <span className="roster-index">02</span>
+                <span className="roster-name">Hu Hu</span>
+                <span className="roster-mark text-dim" aria-hidden="true">·</span>
+              </div>
+            </li>
+            <li className="roster-row" data-active="false">
+              <div className="roster-row-head">
+                <span className="roster-index">03</span>
+                <span className="roster-name">77th Director</span>
+                <span className="roster-mark text-unsure" aria-hidden="true">–</span>
+              </div>
+            </li>
+          </ol>
         </div>
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.28em] text-ember">04 · Stamps (click to slam)</h2>
-        <button type="button" onClick={() => setSlammed((s) => !s)} className="flex flex-wrap gap-4 border border-rule p-5">
-          <Stamp tone="heard" slam={slammed} key={`h${slammed}`}>Heard</Stamp>
-          <Stamp tone="never" slam={slammed} key={`n${slammed}`}>Never</Stamp>
-          <Stamp tone="unsure" slam={slammed} key={`u${slammed}`}>Unsure</Stamp>
-        </button>
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.28em] text-ember">05 · Tray chips</h2>
-        <div className="flex gap-0 overflow-x-auto border border-rule">
-          <TrayChip text="01 Walnut" verdict="heard" active />
-          <TrayChip text="02 Hu Hu" />
-          <TrayChip text="03 77th Director" verdict="unsure" />
+        <div className="record-actions">
+          <button type="button" className="record-action">Undo last</button>
+          <button type="button" className="record-action">Skip character →</button>
         </div>
+        <button type="button" className="add-name-toggle mt-4">We missed one — add a name for Hu Tao</button>
       </section>
 
       <section>
-        <h2 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.28em] text-ember">06 · Fields</h2>
-        <div className="flex flex-col gap-4 border border-rule p-5">
-          <Field id="sg-nick" label="Nickname" placeholder="e.g. Walnut" hint="As travelers actually say it." />
-          <Field id="sg-url" label="Source link (optional)" placeholder="https://…" inputMode="url" />
-          <Field id="sg-err" label="Invite code" error="That code did not work. Check the link and try again." defaultValue="wrong-code" />
-        </div>
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.28em] text-ember">07 · Type scale</h2>
-        <p className="font-shout text-6xl">WALNUT 64</p>
-        <p className="font-shout text-4xl">HU TAO 32</p>
-        <p className="text-xl">Body 20 — travelers actually say it.</p>
-        <p className="font-whisper text-xl italic">Whisper 20 — the name as travelers say it.</p>
-        <p className="text-[0.72rem] uppercase tracking-[0.28em] text-dim">Kicker 12 — field record № 077</p>
+        <h2 className="mb-3 text-sm font-bold uppercase tracking-[.14em] text-gold">Fields</h2>
+        <div className="flex flex-col gap-4 border border-rule p-5"><Field id="sg-nick" label="Nickname" placeholder="Enter a nickname" hint="Use the name players actually say." /><Field id="sg-url" label="Source link (optional)" placeholder="https://example.com/source" inputMode="url" /><Field id="sg-err" label="Invite code" error="That code did not work. Check it and try again." defaultValue="wrong-code" /></div>
       </section>
     </div>
   );

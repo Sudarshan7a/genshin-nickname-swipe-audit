@@ -19,7 +19,7 @@ function sourceLabel(url) {
   }
 }
 
-export default function CardStack({ card, existingAnswer, blind, onCommit, onSkip, canUndo, onUndo }) {
+export default function CardStack({ card, existingAnswer, blind, onCommit, onSkip, onUndo }) {
   const reduceMotion = useReducedMotion();
   const [flipped, setFlipped] = useState(false);
   const [slam, setSlam] = useState(null);
@@ -165,16 +165,13 @@ export default function CardStack({ card, existingAnswer, blind, onCommit, onSki
       </motion.div>
 
       <div className="mt-px grid grid-cols-3 gap-px border border-rule bg-rule" role="group" aria-label="Your answer">
-        <VoteButton variant="never" onClick={() => commit('never')} aria-label="Never">Never</VoteButton>
-        <VoteButton variant="unsure" onClick={() => commit('unsure')} aria-label="Not sure">Not sure</VoteButton>
-        <VoteButton variant="heard" onClick={() => commit('heard')} aria-label="Heard">Heard →</VoteButton>
+        <VoteButton variant="never" onClick={() => commit('never')} aria-label="Never"><span aria-hidden="true" className="vote-glyph">✕</span> Never</VoteButton>
+        <VoteButton variant="unsure" onClick={() => commit('unsure')} aria-label="Not sure"><span aria-hidden="true" className="vote-glyph">–</span> Not sure</VoteButton>
+        <VoteButton variant="heard" onClick={() => commit('heard')} aria-label="Heard"><span aria-hidden="true" className="vote-glyph">✓</span> Heard →</VoteButton>
       </div>
       <div className="mt-3 flex gap-3">
-        <button type="button" onClick={onUndo} disabled={!canUndo} className="min-h-[44px] px-2 text-[0.8rem] font-bold uppercase tracking-[0.18em] text-dim disabled:opacity-40">
-          Undo
-        </button>
         <button type="button" onClick={onSkip} className="min-h-[44px] px-2 text-[0.8rem] font-bold uppercase tracking-[0.18em] text-dim">
-          Skip →
+          Skip this name →
         </button>
       </div>
       <div className="sr-only" role="status" aria-live="polite">{announcement}</div>

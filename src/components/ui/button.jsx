@@ -36,7 +36,7 @@ export function ActionButton({ children, className, ...rest }) {
         'text-[0.85rem] transition-transform duration-100 active:scale-[0.97] disabled:opacity-40',
         className,
       )}
-      style={{ color: '#0b0a08' }}
+      style={{ color: 'var(--on-ember)' }}
       {...rest}
     >
       {children}
