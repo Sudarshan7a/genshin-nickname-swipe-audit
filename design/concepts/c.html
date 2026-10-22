@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Concept C — Dark editorial (static mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0a08;--ink:#f2ede3;--dim:#8f887a;--ember:#ff5a2a;--ember2:#ffb03a;--rule:#2a251d}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif;min-height:100dvh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.55;background:radial-gradient(60% 45% at 70% 20%,rgba(255,90,42,.16),transparent 70%)}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E")}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 20px 28px}
+.kicker{font-size:.72rem;letter-spacing:.28em;color:var(--dim);margin:0 0 4px}
+.kicker b{color:var(--ember)}
+h1{font-family:Anton,sans-serif;font-size:clamp(3rem,12vw,5.5rem);line-height:.95;margin:0;letter-spacing:.005em}
+h1 .thin{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;color:var(--ember2)}
+.rule{height:1px;background:var(--rule);margin:16px 0}
+.deck{display:flex;flex-direction:column;gap:18px}
+.entline{display:flex;align-items:baseline;gap:12px}
+.entline .no{font-family:Anton;font-size:.9rem;color:var(--ember)}
+.entline .nm{font-family:Anton;font-size:1.4rem;letter-spacing:.02em}
+.entline .el{margin-left:auto;font-size:.72rem;letter-spacing:.22em;color:var(--dim)}
+.card{border:1px solid var(--rule);border-left:3px solid var(--ember);padding:26px 22px;background:rgba(255,255,255,.015)}
+.card .q{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.35rem;color:var(--dim);margin:0 0 6px}
+.card .nick{font-family:Anton;font-size:clamp(2.4rem,10vw,3.6rem);line-height:1;margin:0;text-shadow:0 0 34px rgba(255,90,42,.35)}
+.card .src{color:var(--dim);font-size:.85rem;margin:10px 0 0}
+.votes{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--rule);border:1px solid var(--rule)}
+.votes button{background:var(--bg);color:var(--ink);border:0;min-height:64px;font-size:.8rem;letter-spacing:.18em;cursor:pointer;padding:10px}
+.votes button:hover{background:#141210}
+.votes .h{color:var(--ember2)}.votes .n{color:#ff7a6b}
+.tray{display:flex;gap:0;border:1px solid var(--rule);overflow-x:auto}
+.tray span{flex:none;padding:12px 16px;font-size:.82rem;letter-spacing:.06em;color:var(--dim);border-right:1px solid var(--rule);min-height:44px;display:flex;align-items:center}
+.tray span.done{color:var(--ember2)}
+.count{font-family:Anton;font-size:.85rem;color:var(--dim);letter-spacing:.1em}
+.note{color:var(--dim);font-size:.78rem}
+@media(min-width:1024px){.deck{display:grid;grid-template-columns:220px 1fr 240px;gap:28px}.idx{border-right:1px solid var(--rule);padding-right:20px}.idx div{padding:10px 0;border-bottom:1px solid var(--rule);color:var(--dim);font-size:.85rem}.idx .on{color:var(--ink)}}
+.idx{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">FIELD RECORD <b>№ 077</b> — INVITE ONLY</p>
+  <h1>HEARD IT<br><span class="thin">in the wild?</span></h1>
+  <div class="rule"></div>
+  <div class="deck">
+    <div class="idx" style="display:none"><div>001 · Amber — logged</div><div class="on">002 · Hu Tao — voting</div><div>003 · Ganyu — unopened</div></div>
+    <div>
+      <div class="entline"><span class="no">002</span><span class="nm">HU TAO</span><span class="el">PYRO · POLEARM</span></div>
+      <div class="card" style="margin-top:12px">
+        <p class="q">the name as travelers say it —</p>
+        <p class="nick">“Walnut”</p>
+        <p class="src">12 travelers heard it · source sealed until you vote</p>
+      </div>
+      <div class="votes" style="margin-top:14px"><button class="n">NEVER</button><button>NOT SURE</button><button class="h">HEARD →</button></div>
+    </div>
+    <div>
+      <p class="count">1 / 3 LOGGED</p>
+      <div class="tray"><span class="done">01 Walnut ✓</span><span>02 Hu Hu</span><span>03 77th Director</span></div>
+      <p class="note">STATIC MOCK — Concept C · dark editorial · ember light, grain, rules instead of cards</p>
+    </div>
+  </div>
+</div>
+<style>@media(min-width:1024px){.idx{display:block!important}}</style>
+</body>
+</html>
