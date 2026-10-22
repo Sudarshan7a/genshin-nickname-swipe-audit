@@ -1,6 +1,6 @@
 # DATA-NOTES — ingest conflict resolutions
 
-Generated 2026-10-22T10:30:53.871Z by `scripts/ingest.mjs`. Newer/corrective sources win on overlap; nothing was invented (missing → null). Nickname id = sha1(entityId + '::' + normalized text)[0:16]; normalized = lowercase, single-spaced, trimmed. Re-running ingest never deletes votes: votes key on nickname id.
+Generated 2026-10-22T10:56:03.206Z by `scripts/ingest.mjs`. Newer/corrective sources win on overlap; nothing was invented (missing → null). Nickname id = sha1(entityId + '::' + normalized text)[0:16]; normalized = lowercase, single-spaced, trimmed. Re-running ingest never deletes votes: votes key on nickname id.
 
 ## Entity IDs
 
