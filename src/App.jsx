@@ -3,6 +3,9 @@ import Gate from './components/Gate.jsx';
 import EntityHeader from './components/EntityHeader.jsx';
 import CardStack from './components/CardStack.jsx';
 import Tray from './components/Tray.jsx';
+import Summary from './components/Summary.jsx';
+import HelpQueue from './components/HelpQueue.jsx';
+import Admin from './components/Admin.jsx';
 import Styleguide from './styleguide.jsx';
 import {
   getInviteCode,
@@ -10,8 +13,7 @@ import {
   clearInviteCode,
   createAuthFetch,
 } from './store/session.js';
-import {
-  loadQueue,
+import { loadQueue,
   enqueue,
   flushQueue,
   loadLocalVotes,
@@ -22,6 +24,7 @@ import {
   recordVoteDay,
   getStreak,
 } from './store/queue.js';
+import { isSoundOn, setSoundOn, tick } from './store/sound.js';
 
 const FILTERS = [
   { id: 'all', label: 'All' },
@@ -53,6 +56,7 @@ export default function App() {
     }
   });
   const [streak, setStreak] = useState(() => getStreak());
+  const [soundOn, setSound] = useState(() => isSoundOn());
   const [pendingCount, setPendingCount] = useState(() => loadQueue().length);
 
   useEffect(() => {
@@ -101,12 +105,18 @@ export default function App() {
     return () => window.removeEventListener('online', onOnline);
   }, [code, authFetch, loadAll]);
 
-  function toggleBlind() {
-    setBlind((b) => {
+  function toggleBlind() {    setBlind((b) => {
       try {
         localStorage.setItem('ns-blind', b ? 'off' : 'on');
       } catch { /* ignore */ }
       return !b;
+    });
+  }
+
+  function toggleSound() {
+    setSound((s) => {
+      setSoundOn(!s);
+      return !s;
     });
   }
 
@@ -170,6 +180,7 @@ export default function App() {
     saveLocalVotes(next);
     recordVoteDay();
     setStreak(getStreak());
+    tick(answer);
     persist('vote', { nicknameId: card.id, entityId: entity.id, answer });
     const idx = nextUnvoted(nicknames, next, safePos + 1);
     window.setTimeout(() => {
@@ -245,27 +256,26 @@ export default function App() {
           <span className="font-shout text-xs tracking-[0.15em] text-dim">{doneCount}/{filtered.length} ✓</span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pb-4">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pb-4">
           <span className="font-shout text-lg tracking-wide">NICKNAME SWIPE</span>
-          <span className="text-[0.72rem] uppercase tracking-[0.22em] text-dim">field record · {streak}-day streak</span>
-          <span className="flex-1" />
-          <button type="button" onClick={() => setMode(mode === 'help' ? 'deck' : 'help')} aria-pressed={mode === 'help'} className="min-h-[44px] px-2 text-[0.78rem] font-bold uppercase tracking-[0.18em] text-dim">
-            Help find names{helpList.length ? ` (${helpList.length})` : ''}
-          </button>
-          <button type="button" onClick={signOut} className="min-h-[44px] px-2 text-[0.78rem] uppercase tracking-[0.18em] text-dim underline">
+          <button type="button" onClick={signOut} className="ml-auto min-h-[44px] px-2 text-[0.72rem] uppercase tracking-[0.18em] text-dim underline">
             Sign out
           </button>
+          <span className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 text-[0.72rem] font-bold uppercase tracking-[0.18em] text-dim">
+            <span>{streak}-day streak</span>
+            <button type="button" onClick={toggleSound} aria-pressed={soundOn} title={soundOn ? 'Sound on' : 'Sound off'}>
+              Sound {soundOn ? 'on' : 'off'}
+            </button>
+            <button type="button" onClick={() => setMode(mode === 'help' ? 'deck' : 'help')} aria-pressed={mode === 'help'}>
+              Help find names{helpList.length ? ` (${helpList.length})` : ''}
+            </button>
+          </span>
         </div>
 
         {isAdminRoute ? (
-          <p className="border border-rule p-6 text-dim">Review desk lands in M5.</p>
+          <Admin authFetch={authFetch} />
         ) : mode === 'help' ? (
-          <section aria-label="Help us find names" className="border border-rule p-6">
-            <h2 className="font-shout text-3xl uppercase">Unopened records</h2>
-            <p className="mt-1 font-whisper text-lg italic text-dim">
-              {helpList.length} {helpList.length === 1 ? 'entry still needs' : 'entries still need'} names — suggest flows land in M5.
-            </p>
-          </section>
+          <HelpQueue entities={helpList} authFetch={authFetch} />
         ) : loadError ? (
           <div role="alert" className="border border-never p-6">
             <p>{loadError}</p>
@@ -316,24 +326,21 @@ export default function App() {
             </aside>
 
             <div className="order-2">
-              <EntityHeader entity={entity} index={Math.min(entityIdx, filtered.length - 1)} blind={blind} onToggleBlind={toggleBlind} />
+              {!complete ? (
+                <EntityHeader entity={entity} index={Math.min(entityIdx, filtered.length - 1)} blind={blind} onToggleBlind={toggleBlind} />
+              ) : null}
               <div className="mt-4">
                 {complete ? (
-                  <section aria-label={`${entity.name} — your answers`} className="border border-rule p-6">
-                    <h3 className="font-shout text-2xl uppercase">Logged in the field book</h3>
-                    <ol className="mt-3 flex flex-col gap-2">
-                      {nicknames.map((n) => (
-                        <li key={n.id} className="flex items-baseline justify-between gap-3 border-b border-rule pb-2">
-                          <span className="font-bold">{n.text}</span>
-                          <span className="text-[0.85rem] text-heard">{voteStatus(n.id, votesById) || 'skipped'}</span>
-                        </li>
-                      ))}
-                    </ol>
-                    <p className="mt-3 text-[0.85rem] text-dim">Suggest-a-name + review polish land in M5.</p>
-                    <button type="button" onClick={nextEntity} className="mt-4 min-h-[48px] border border-ember px-5 font-bold uppercase tracking-[0.14em] text-gold">
-                      {entityIdx + 1 < filtered.length ? 'Next entry →' : 'Back to start →'}
-                    </button>
-                  </section>
+                  <Summary
+                    entity={entity}
+                    votesById={votesById}
+                    onRevisit={setPos}
+                    onNext={nextEntity}
+                    hasNext={entityIdx + 1 < filtered.length}
+                    authFetch={authFetch}
+                    onSuggested={() => {}}
+                    shortDeck={nicknames.length <= 2}
+                  />
                 ) : card ? (
                   <CardStack
                     key={card.id}
