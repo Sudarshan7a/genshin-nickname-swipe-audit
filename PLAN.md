@@ -1,6 +1,6 @@
 # PLAN.md — Nickname Swipe Rebuild
 
-> Status: M0 + M1 DONE (verified below). M2+ awaiting your go. No M2+ code written.
+> Status: M0→M5 DONE (M5: 9/10 pass, layout partial — see VERIFY.md). Tunnel NOT exposed (needs manual phone drag test).
 
 ## Milestone 0 — Empty app runs, lints, tests, builds ✅ DONE
 - Verified: `npm run lint` ✅, `npx tsc --noEmit` ✅, `npm test` (13 pass) ✅, `npm run build` ✅ on the M0 shell + M1 ingest.

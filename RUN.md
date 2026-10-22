@@ -41,3 +41,7 @@ Feature (primary) + Autonomous run (drive without stopping).
 | step | change | predicate moved? |
 |---|---|---|
 | M0+M1 | shell + ingest, 442 entities | gate green, committed `bfd3ee3` |
+| M2 | backend API + storage + backups | 44 tests green, committed `f0cceeb` |
+| M3+M4 | swipe UX + Teyvat design + admin | browser-verified after fixes, committed `1c26a92` |
+| M5 fixes | AnimatePresence removal; ingest exclusion tightening | gate green, committed `20e14a0` |
+| M5 | 10 flows via WebBridge (8 pass, 1 partial-layout, drag untestable here) | VERIFY.md written |
