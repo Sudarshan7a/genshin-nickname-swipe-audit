@@ -1,37 +1,30 @@
-# Nickname Swipe — Rebuild (PROJECT.md)
+# PROJECT.md — Nickname Swipe UI Rebuild (from scratch)
 
 ## Purpose
-Rebuild "Nickname Swipe" completely from scratch (ignore old code) to validate community nicknames for Genshin Impact characters, weapons, and artifact sets. Voters swipe through research-backed nickname candidates and answer one question per card: "Have you heard people call it this?" Results measure which nicknames are actually recognized.
+Throw away the current UI (`src/*`, `teyvat.css`) and rebuild it from zero on the proven backend. Same app: validate community nicknames for Genshin characters/weapons/artifacts by asking one question per card: “Heard it in the wild?”
 
 ## Users
-- **Invite-only voters** (friends): open `?code=` link, swipe, suggest missing nicknames.
-- **Admin** (you): reviews suggestions behind a separate `ADMIN_CODE`, approves/rejects, downloads `results.json`.
+- Invite-only voters (friends on phones): open link, swipe, suggest missing names.
+- Admin (you): review suggestions, approve/reject, export `results.json`.
 
 ## Must-haves
-1. **STEP 0 — Ingest (before UI):** `scripts/ingest.mjs` parses everything under `new research/` (aritfacts [sic], character, weapons) into ONE normalized `data/entities.json`: `{ id, type: character|weapon|artifact, name, imageUrl|null, nicknames: [{ text, sourceUrl|null, quote|null, researchConfidence|null }] }`. Never invent names/nicknames/sources; missing → null. Conflict rule: newer/corrective wins (list all in `DATA-NOTES.md`). Print summary: counts per type, entities with 0 / 1–2 nicknames, parse failures.
-2. **STEP 1 — Core UX:** One entity at a time, type filter (All/Characters/Weapons/Artifacts) + search. Header: name + type badge (image only if `imageUrl`). Stack of nickname cards, Tinder physics (drag rotation, velocity commit, HEARD/NEVER/UNSURE stamps, spring-back, haptic). Swipe right=Heard, left=Never, up=Not sure + buttons + arrow keys (→←↑), Undo, Skip. Tap to flip for source link + quote (blind mode default ON). After last card: summary → "Add one I know" form (nickname + optional URL + where-heard chips) → Next entity. 0–1 nickname entities go straight to suggest card. Suggestions stored separately, never shown as verified, visible to others only after admin approval. Three answers stored as separate values, never merged.
-3. **STEP 2 — Storage & access (local, no cloud):** Single Node server serves built frontend + JSON API, SQLite via better-sqlite3 at `data/votes.db`. Tables: `votes` (UNIQUE voter_id+entity_id+nickname, upsert), `suggestions`, `voters`. Endpoints: `POST /api/vote`, `GET /api/my-votes`, `POST /api/suggest`, `GET /api/results` (admin code), `POST /api/admin/suggestion/:id` (approve/reject). Optimistic UI + offline queue with retry. Invite `?code=` auto-login → localStorage; bare URL = one code input only. Codes from env `INVITE_CODE` / `ADMIN_CODE`. Rate-limit writes. Layout: entity header on top, bottom tray (mobile) / side list (desktop) with all nicknames as chips, clickable to revisit. Single `npm start` on one port. Admin page: review, approve/reject, download `results.json`.
-4. **STEP 3 — Design:** Dark Teyvat-inspired (parchment slips, gold accents, element glow if known), NOT generic. No HoYoverse art hosted. Mobile-first thumb buttons, 100dvh, safe-area, no scroll-jank. Progress bar, ✓ per entity, daily streak display-only. Respect `prefers-reduced-motion`. A11y: buttons for every gesture, focus states, aria-live.
-5. **STEP 4 — Quality:** Pure logic in shared module + unit tests (vote separation, upsert, threshold, 0-candidate handling, ingest parsing). Run tests, run app, test 390px + 1440px with screenshots.
+1. Delete current UI files outright, no porting of styles/markup.
+2. Keep backend contract frozen: `GET /api/entities`, `POST /api/vote`, `DELETE /api/vote`, `GET /api/my-votes`, `POST /api/suggest`, `GET /api/results`, `GET /api/export`, `POST /api/admin/suggestions/:id`, `x-invite-code` + `x-voter-id` + `x-admin-code`, per-voter rate limits, `data/votes.db` stays clean.
+3. Keep single `npm start` on one port, gzip + CDN vendors (tunnel drops responses ~30KB).
+4. Core flows preserved: gate (`?code=` auto-login), filter All/Characters/Weapons/Artifacts + search, entity header + art fallback, swipe card (drag right=Heard / left=Never / up=Not sure + buttons + arrow keys, Undo, Skip, blind mode ON, tap-flip for source/quote), tray chips (mobile bottom sheet / desktop side), summary → suggest → Next, Help-queue for zero-nickname entities, admin review desk.
+5. New design system from tokens up (no generic AI look): mobile 390px / desktop 1440px, 44px targets, no horizontal overflow, `prefers-reduced-motion`, keyboard + aria-live, zero console errors.
+6. Quality: `npm run lint`, `npx tsc --noEmit`, `npm test` (46 unit), `npm run e2e` (14 Playwright) stay green; screenshots for deck/tray/help/admin/summary/empty/error/gate.
 
 ## Non-goals
-- No reuse of old code (`index.html`, `js/`, `css/`, `tools/`, root `characters-export.json` are legacy — ignore).
+- No backend / ingest / DB rewrite (`server/`, `scripts/ingest.mjs`, `data/entities.json`, `shared/` untouched).
 - No cloud DB/auth/analytics; no public access without invite code.
-- No auto-promoting research candidates or user suggestions to "verified."
-- No hosting HoYoverse art; `imageUrl` from research JSONs used only if present, else no image.
-- No frequency/popularity claims beyond what evidence + votes support.
+- No auto-promoting suggestions to verified; no hosting HoYoverse art.
+- No new features beyond parity + look/feel (streak, sound, art fallback are parity, not new scope).
 
-## Data sources (canonical)
-- `new research/character/`: `characters-export.json` (124 keys) + batch-1..13 + handoff guide + START-HERE.MD.
-- `new research/aritfacts/`: `artifact_sets.json` (63) + batch-1..7 + corrective-silken-song + handoff guide + START-HERE.md.
-- `new research/weapons/`: `weapons.json` (255) + `research-output/weapons-research.md` + `weapons-no-alias-list.md` + `weapons-recheck-research.md` + `weapons-fetch-retry-packet.md` + `weapon research by other agent/weapons-batch-01..26.json` + guide.
-- Known conflicts to resolve in DATA-NOTES.md: characters missing `emilie`/`escoffier` + duplicated `ineffa`; artifact batch-6 misnumbering + `viridescentvenerer`/`wandererstroupe` duplication + corrective additive for `silkenmoonsserenade`/`songofdayspast`; weapons `calamityofeshu CoE`, `beyondthechrysalis chrysalis` verdict differences + preliminary-vs-verified strictness.
+## Hard constraints
+- Codes from env (`INVITE_CODE`/`ADMIN_CODE`), never committed/printed.
+- e2e uses `e2e/.tmp/e2e.db` only; real `data/votes.db` stays empty until friends vote.
+- Working branch `feat/rebuild`; uncommitted redesign WIP gets stashed/discarded on approval, not merged.
 
 ## Stack choice
-Vite + React + TypeScript + Tailwind + Framer Motion frontend with Express + better-sqlite3 backend (single `npm start` serves dist + API) — because the spec mandates single-port local serving, SQLite upserts, and Tinder physics, and this is the simplest stack that covers all three with unit-testable shared logic.
-
-## Approved edits (2026-10-22, M1 scope)
-- Nickname stable id = sha1(entityId + '::' + normalized text)[0:16]; votes key on it; re-ingest never deletes votes.
-- Duplicates merged by key (ineffa, viridescentvenerer, wandererstroupe); corrective additive; batch-6 parsed by Exact key; weapons union all sources with provenance + preliminary preserved; conflicts kept as separate candidates.
-- emilie/escoffier exist with zero nicknames. All zero-nickname entities stay out of the main deck in a "Help us find names" mode (suggest-only + counter).
-- Bottom tray chips with status marks (side list on desktop), `?code=` auto-login, offline queue + optimistic UI, nightly votes.db → backups/, admin results.json export, suggestions deduped against existing nicknames.
+Vite + React + TS + Tailwind + shadcn/ui tokens + Framer Motion + lucide-react frontend on existing Express + better-sqlite3 backend — because backend/tunnel/DB are already proven live and the rebuild is UI-only, so lowest risk is keep the serving/data layer and swap the presentation layer for a real token-driven system.
