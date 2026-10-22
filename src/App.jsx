@@ -233,7 +233,9 @@ export default function App() {
   if (isStyleguide) {
     return (
       <div className="app-atmosphere min-h-dvh bg-bg text-ink">
-        <Styleguide />
+        <main>
+          <Styleguide />
+        </main>
       </div>
     );
   }
@@ -241,14 +243,16 @@ export default function App() {
   if (!code) {
     return (
       <div className="app-atmosphere min-h-dvh bg-bg text-ink">
-        <Gate onAuthed={(c) => setCode(c)} />
+        <main>
+          <Gate onAuthed={(c) => setCode(c)} />
+        </main>
       </div>
     );
   }
 
   return (
     <div className="app-atmosphere min-h-dvh bg-bg pb-10 text-ink">
-      <div className="mx-auto max-w-6xl px-4 pt-3 md:px-6">
+      <main className="mx-auto max-w-6xl px-4 pt-3 md:px-6">
         <div role="progressbar" aria-valuenow={doneCount} aria-valuemin={0} aria-valuemax={filtered.length} aria-label="Deck progress" className="mb-3 flex items-center gap-3">
           <div className="h-[3px] flex-1 bg-rule">
             <div className="h-full bg-ember transition-all" style={{ width: filtered.length ? `${(100 * doneCount) / filtered.length}%` : '0%' }} />
@@ -263,10 +267,10 @@ export default function App() {
           </button>
           <span className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 text-[0.72rem] font-bold uppercase tracking-[0.18em] text-dim">
             <span>{streak}-day streak</span>
-            <button type="button" onClick={toggleSound} aria-pressed={soundOn} title={soundOn ? 'Sound on' : 'Sound off'}>
+            <button type="button" onClick={toggleSound} aria-pressed={soundOn} title={soundOn ? 'Sound on' : 'Sound off'} className="min-h-[44px]">
               Sound {soundOn ? 'on' : 'off'}
             </button>
-            <button type="button" onClick={() => setMode(mode === 'help' ? 'deck' : 'help')} aria-pressed={mode === 'help'}>
+            <button type="button" onClick={() => setMode(mode === 'help' ? 'deck' : 'help')} aria-pressed={mode === 'help'} className="min-h-[44px]">
               Help find names{helpList.length ? ` (${helpList.length})` : ''}
             </button>
           </span>
@@ -277,14 +281,14 @@ export default function App() {
         ) : mode === 'help' ? (
           <HelpQueue entities={helpList} authFetch={authFetch} />
         ) : loadError ? (
-          <div role="alert" className="border border-never p-6">
+          <div role="alert" data-testid="error" className="border border-never p-6">
             <p>{loadError}</p>
             <button type="button" onClick={loadAll} className="mt-3 min-h-[44px] border border-ink px-4 font-bold uppercase tracking-[0.14em]">Retry</button>
           </div>
         ) : !entities ? (
-          <p role="status" className="text-dim">Sharpening pencils…</p>
+          <p role="status" data-testid="loading" className="text-dim">Sharpening pencils…</p>
         ) : !entity ? (
-          <p className="border border-rule p-6 text-dim">No entries match. Try another search or filter.</p>
+          <p data-testid="empty" className="border border-rule p-6 text-dim">No entries match. Try another search or filter.</p>
         ) : (
           <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[220px_minmax(0,1fr)_250px] lg:gap-6">
             <aside aria-label="Entry browser" className="order-1">
@@ -316,7 +320,7 @@ export default function App() {
                       type="button"
                       onClick={() => resetEntity(i)}
                       aria-current={i === Math.min(entityIdx, filtered.length - 1)}
-                      className={`block w-full border-b border-rule py-2 text-left text-[0.85rem] ${i === Math.min(entityIdx, filtered.length - 1) ? 'text-ink' : 'text-dim'}`}
+                      className={`flex min-h-[44px] w-full items-center border-b border-rule py-1 text-left text-[0.85rem] ${i === Math.min(entityIdx, filtered.length - 1) ? 'text-ink' : 'text-dim'}`}
                     >
                       {String(i + 1).padStart(3, '0')} · {e.name}
                     </button>
@@ -368,7 +372,7 @@ export default function App() {
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

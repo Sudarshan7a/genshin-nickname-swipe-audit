@@ -120,7 +120,7 @@ export default function Admin({ authFetch }) {
   }
 
   return (
-    <section aria-label="Admin review" className="flex flex-col gap-4">
+    <section aria-label="Admin review" data-testid="admin" className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
         <h2 className="font-shout text-3xl uppercase">Review desk</h2>
         <span className="flex-1" />

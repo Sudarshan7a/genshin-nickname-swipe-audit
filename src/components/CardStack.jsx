@@ -89,16 +89,16 @@ export default function CardStack({ card, existingAnswer, blind, onCommit, onSki
       };
 
   return (
-    <section aria-label={`Nickname card: ${card.text}`}>
+    <section aria-label={`Nickname card: ${card.text}`} data-testid="card">
       <motion.div
-        className="rise-in relative border border-rule border-l-ember bg-bg px-6 py-8"
+        className="rise-in relative border border-rule border-l-ember bg-bg px-6 py-8 swipe-card"
         style={reduceMotion ? undefined : { x, y, rotate, borderLeftWidth: 3, touchAction: 'none', userSelect: 'none' }}
         {...dragProps}
       >
         {!flipped ? (
           <div>
             <p className="font-whisper text-xl italic text-dim">heard in the wild?</p>
-            <p className="mt-1 font-shout leading-none" style={{ fontSize: 'clamp(2.4rem, 10vw, 3.6rem)', }}>
+            <p data-testid="card-nick" className="mt-1 font-shout uppercase leading-none" style={{ fontSize: 'clamp(2.4rem, 10vw, 3.6rem)', overflowWrap: 'anywhere', textWrap: 'balance' }}>
               {card.text}
             </p>
             {existingAnswer ? (

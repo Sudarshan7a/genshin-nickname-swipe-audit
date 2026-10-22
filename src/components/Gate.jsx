@@ -34,7 +34,7 @@ export default function Gate({ onAuthed }) {
   }
 
   return (
-    <div className="flex min-h-dvh items-center justify-center px-5">
+    <div className="flex min-h-dvh items-center justify-center px-5" data-testid="gate">
       <div className="w-full max-w-md border border-rule bg-bg p-8">
         <p className="text-[0.72rem] font-bold uppercase tracking-[0.28em] text-dim">Field record · invite only</p>
         <h1 className="mt-2 font-shout text-5xl leading-none">

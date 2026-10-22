@@ -1,4 +1,22 @@
-# VERIFY.md — M2→M5 verification evidence (2026-10-22)
+# VERIFY.md — UI rebuild evidence (2026-10-22, Concept C dark editorial)
+
+## Outcome (rebuild)
+M0 empty shell → M1 research (20 refs, 10 moodboard shots) → M2 three concepts (6 shots, C picked) → M3 tokens + primitives + styleguide → M4 deck slice → M5 summary/suggest/help/admin/sound → M6 polish + 16/16 e2e. Gate: lint clean, tsc 0, 46/46 unit, build green (JS ~38KB / 12.1KB gz — tunnel-safe), 16/16 Playwright (drag incl. velocity + spring-back, overflow, 44px targets, zero console errors). Real votes DB verified 0 rows (3 stray test rows from today quarantined to `backups/stray-votes-20261022.json`, gitignored, restorable).
+
+## Rebuild evidence
+- Concepts: `design/concepts/{a,b,c}-{mobile,desktop}.png` + `design/concepts/*.html`
+- System: `design/styleguide-{mobile,desktop}.png`, `design/deck-m5-*`, `summary/help/admin-gate/admin-m5-*`
+- Worst-case: `design/worst-320.png` (33-char nickname, 320px, no overflow) + `design/reduced-motion.png`
+- e2e shots: `e2e/screenshots/{deck,tray,help,admin,summary,empty,error,gate}-{mobile,desktop}.png`
+- Tunnel go-live check NOT run (tunnel not exposed, per user). Run `npm run share` + `node tools/golive-check.cjs` when ready.
+
+## Limitations
+- Lighthouse mobile perf ~61 (a11y 98): esm.sh vendor chain + 251KB entities payload on throttled lab. Accepted per user (survey-only use). Path if it matters later: `?bundle` import map (already applied), lazy-motion, slim entities payload.
+- 3 unattributed test votes found in `data/votes.db` today (random voter, 3×unsure on Albedo); quarantined, DB at 0. If friend votes arrive via any still-running old tunnel, they land in the same DB — re-check counts before launch.
+- Break-UI toggle not wired (static worst-case shot instead); visual check only, no real-device pass yet.
+
+---
+# Previous run history (old UI, kept for reference)
 
 ## Outcome
 Full rebuild slice M2 (backend) + M3 (swipe UX) + M4 (design + admin) + M5 (browser verification) done on `feat/rebuild`. Predicate: gate green AND all 10 browser flows pass. Predicate met with two documented exceptions (drag gesture, live 390px render — see Limitations).

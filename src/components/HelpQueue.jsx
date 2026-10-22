@@ -49,7 +49,7 @@ export default function HelpQueue({ entities, authFetch }) {
   }
 
   return (
-    <section aria-label="Help us find names" className="flex flex-col gap-4">
+    <section aria-label="Help us find names" data-testid="help" className="flex flex-col gap-4">
       <div>
         <p className="text-[0.72rem] font-bold uppercase tracking-[0.28em] text-ember">Unopened records</p>
         <h2 className="mt-1 font-shout text-4xl uppercase">Help find names</h2>

@@ -10,7 +10,7 @@ export function TrayChip({ text, verdict, active, ...rest }) {
       type="button"
       aria-pressed={!!active}
       className={cn(
-        'flex min-h-[44px] flex-none items-center border border-rule px-4 text-[0.82rem] tracking-[0.06em]',
+        'flex min-h-[44px] flex-none items-center border border-rule px-4 text-[0.82rem] tracking-[0.06em] [overflow-wrap:anywhere]',
         verdict ? 'text-ink' : 'text-dim',
         active && 'border-ember text-ink',
       )}

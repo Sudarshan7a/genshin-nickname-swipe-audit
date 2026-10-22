@@ -1,6 +1,6 @@
-# PLAN.md — UI Rebuild From Scratch (awaiting approval, no code yet)
+# PLAN.md — UI Rebuild From Scratch (approved with changes, executed M0→M6)
 
-> Status: PROPOSED — do not implement until user replies “approve”.
+> Status: M0–M6 DONE (2026-10-22). M7 local gate done; public tunnel NOT started (per user: don't expose until done).
 
 ## Milestone 0 — Empty UI shell runs, lints, tests, builds (first, per project-kickoff)
 - Files: `src/` deleted except `main.tsx` stub + `src/App.tsx` placeholder, `src/teyvat.css` deleted, `DESIGN.md` tokens stub; backend `server/`, `tests/`, `e2e/`, `scripts/` untouched.

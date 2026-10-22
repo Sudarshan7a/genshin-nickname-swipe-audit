@@ -27,8 +27,8 @@ async function noHOverflow(page) {
 }
 
 test('no horizontal overflow; tap targets reachable', async ({ page }, testInfo) => {
-  await gotoDeck(page, `layout-${testInfo.project.name}`);
-  await expect(page.locator('.card-nick').first()).toBeVisible();
+  await gotoDeck(page, `layout-${testInfo.project.name}-${Date.now()}`);
+  await expect(page.locator('[data-testid="card-nick"]').first()).toBeVisible();
   // Let the card enter-spring settle: rects include transforms while animating.
   await page.waitForFunction(() => {
     const el = document.querySelector('.swipe-card');
@@ -40,7 +40,7 @@ test('no horizontal overflow; tap targets reachable', async ({ page }, testInfo)
   expect(await smallTargets(page)).toEqual([]);
 
   const trayInView = await page.evaluate(() => {
-    const tray = document.querySelector('.tray');
+    const tray = document.querySelector('[data-testid="tray"]');
     if (!tray) return false;
     const r = tray.getBoundingClientRect();
     return r.left >= -1 && r.right <= window.innerWidth + 1;
@@ -48,14 +48,14 @@ test('no horizontal overflow; tap targets reachable', async ({ page }, testInfo)
   expect(trayInView).toBe(true);
 
   await page.getByRole('button', { name: /Help find names/ }).click();
-  await expect(page.getByRole('heading', { name: /Help us find names/ })).toBeVisible();
+  await expect(page.locator('[data-testid="help"]')).toBeVisible();
   await noHOverflow(page);
   expect(await smallTargets(page)).toEqual([]);
 
   await page.goto('/#/admin');
   await page.getByLabel(/Admin code/).fill(ADMIN_CODE);
   await page.getByRole('button', { name: 'Unlock' }).click();
-  await expect(page.getByRole('heading', { name: /Review desk/ })).toBeVisible();
+  await expect(page.locator('[data-testid="admin"]')).toBeVisible();
   await noHOverflow(page);
   expect(await smallTargets(page)).toEqual([]);
 });
@@ -63,18 +63,18 @@ test('no horizontal overflow; tap targets reachable', async ({ page }, testInfo)
 test('screenshots: deck, tray, help queue, admin', async ({ page }, testInfo) => {
   ensureShotDir();
   const tag = testInfo.project.name;
-  await gotoDeck(page, `shots-${tag}`);
-  await expect(page.locator('.card-nick').first()).toBeVisible();
+  await gotoDeck(page, `shots-${tag}-${Date.now()}`);
+  await expect(page.locator('[data-testid="card-nick"]').first()).toBeVisible();
   await page.screenshot({ path: `e2e/screenshots/deck-${tag}.png` });
-  await page.locator('.tray').screenshot({ path: `e2e/screenshots/tray-${tag}.png` });
+  await page.locator('[data-testid="tray"]').screenshot({ path: `e2e/screenshots/tray-${tag}.png` });
 
   await page.getByRole('button', { name: /Help find names/ }).click();
-  await expect(page.getByRole('heading', { name: /Help us find names/ })).toBeVisible();
+  await expect(page.locator('[data-testid="help"]')).toBeVisible();
   await page.screenshot({ path: `e2e/screenshots/help-${tag}.png` });
 
   await page.goto('/#/admin');
   await page.getByLabel(/Admin code/).fill(ADMIN_CODE);
   await page.getByRole('button', { name: 'Unlock' }).click();
-  await expect(page.getByRole('heading', { name: /Review desk/ })).toBeVisible();
+  await expect(page.locator('[data-testid="admin"]')).toBeVisible();
   await page.screenshot({ path: `e2e/screenshots/admin-${tag}.png` });
 });

@@ -28,7 +28,7 @@ export async function gotoDeck(page, voterId: string) {
     { code: INVITE_CODE, voter: voterId },
   );
   await page.goto('/?code=' + INVITE_CODE);
-  await expect(page.locator('.card-nick, .summary-title, .gate-card')).toBeVisible();
+  await expect(page.locator('[data-testid="card"], [data-testid="summary"], [data-testid="gate"]').first()).toBeVisible();
 }
 
 export async function apiHeaders(page) {

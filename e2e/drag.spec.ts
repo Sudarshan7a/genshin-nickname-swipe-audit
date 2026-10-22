@@ -16,7 +16,7 @@ async function deckEntities(page): Promise<Ent[]> {
 }
 
 async function activeCardText(page) {
-  return (await page.locator('.card-nick').first().textContent()) ?? '';
+  return (await page.locator('[data-testid="card-nick"]').first().textContent()) ?? '';
 }
 
 function bare(text: string) {
@@ -72,7 +72,7 @@ const ANSWERS = [
 
 for (const { dir, dx, dy, answer } of ANSWERS) {
   test(`drag ${dir} commits ${answer}`, async ({ page }, testInfo) => {
-    const voter = `drag-${dir}-${testInfo.project.name}`;
+    const voter = `drag-${dir}-${testInfo.project.name}-${Date.now()}`;
     await gotoDeck(page, voter);
     const [first] = await deckEntities(page);
     const target = first.nicknames[0];
@@ -86,7 +86,7 @@ for (const { dir, dx, dy, answer } of ANSWERS) {
 }
 
 test('slow short drag springs back with no commit', async ({ page }, testInfo) => {
-  const voter = `drag-slow-${testInfo.project.name}`;
+  const voter = `drag-slow-${testInfo.project.name}-${Date.now()}`;
   await gotoDeck(page, voter);
   const [first] = await deckEntities(page);
   const before = bare(await activeCardText(page));
@@ -99,7 +99,7 @@ test('slow short drag springs back with no commit', async ({ page }, testInfo) =
 });
 
 test('fast flick commits via velocity', async ({ page }, testInfo) => {
-  const voter = `drag-flick-${testInfo.project.name}`;
+  const voter = `drag-flick-${testInfo.project.name}-${Date.now()}`;
   await gotoDeck(page, voter);
   const [first] = await deckEntities(page);
   const target = first.nicknames[0];
