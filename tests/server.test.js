@@ -333,4 +333,25 @@ describe('rate limiting keys on the forwarded client IP', () => {
       .send({ entityId: emptyEntity.id, nickname: 'Rl Nick B fine' });
     expect(other.status).toBe(201);
   });
+
+  it('same tunnel IP, different voters get independent buckets', async () => {
+    const voter = (v) => ({ 'x-invite-code': 'test-invite', 'x-voter-id': v });
+    for (let i = 0; i < 300; i += 1) {
+      const r = await request(app)
+        .post('/api/suggest')
+        .set(voter('rl-same-a'))
+        .send({ entityId: emptyEntity.id, nickname: `Rl Same A ${i}` });
+      expect(r.status).toBe(201);
+    }
+    const limited = await request(app)
+      .post('/api/suggest')
+      .set(voter('rl-same-a'))
+      .send({ entityId: emptyEntity.id, nickname: 'Rl Same A capped' });
+    expect(limited.status).toBe(429);
+    const other = await request(app)
+      .post('/api/suggest')
+      .set(voter('rl-same-b'))
+      .send({ entityId: emptyEntity.id, nickname: 'Rl Same B fine' });
+    expect(other.status).toBe(201);
+  });
 });

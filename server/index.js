@@ -88,7 +88,11 @@ export function createApp(opts = {}) {
 
   app.use('/api', requireInvite);
 
-  const writeLimit = rateLimit({ windowMs: 60 * 1000, max: 300 });
+  // Per-voter buckets: the tunnel delivers every friend from loopback with
+  // no forwarding header, so IP alone would put all friends in one bucket.
+  const voterIdOrIp = (req) =>
+    (typeof req.header === 'function' && req.header('x-voter-id')) || req.ip;
+  const writeLimit = rateLimit({ windowMs: 60 * 1000, max: 300, keyBy: voterIdOrIp });
 
   function mergedDeck() {
     const approved = db.prepare('SELECT * FROM suggestions WHERE status = ?').all('approved');

@@ -1,8 +1,14 @@
-// In-memory sliding-window limiter. Keyed by IP + route path.
-export function rateLimit({ windowMs, max }) {
+// In-memory sliding-window limiter. Keyed by route path plus keyBy(req).
+// Default key is the client IP. Behind a blind TCP tunnel every socket
+// arrives from loopback with no forwarding header, so callers SHOULD pass a
+// per-client keyBy (e.g. the voter id) — otherwise all friends share one
+// bucket and one heavy voter can 429 everyone else.
+export function rateLimit({ windowMs, max, keyBy }) {
   const hits = new Map();
+  const keyFn = typeof keyBy === 'function' ? keyBy : (req) => req.ip;
   return function rateLimitMiddleware(req, res, next) {
-    const key = `${req.ip ?? 'unknown'}::${req.path ?? req.url ?? ''}`;
+    const who = keyFn(req) ?? req.ip ?? 'unknown';
+    const key = `${who}::${req.path ?? req.url ?? ''}`;
     const now = Date.now();
     const cutoff = now - windowMs;
     let times = hits.get(key);
