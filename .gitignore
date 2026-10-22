@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+data/votes.db
+data/votes.db-*
+backups/
+results.json
+votes.json
+data/candidates.json
+data/invite.json
