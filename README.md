@@ -19,5 +19,6 @@ Open `http://localhost:3000/?code=YOUR_INVITE_CODE`.
 npm run lint
 npx tsc --noEmit
 npm test
+npm run e2e   # Playwright: real drags, layout, screenshots (needs npm run build first)
 npm run build
 ```

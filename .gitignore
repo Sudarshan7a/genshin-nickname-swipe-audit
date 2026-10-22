@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .env
+e2e/.tmp/
 data/votes.db
 data/votes.db-*
 backups/

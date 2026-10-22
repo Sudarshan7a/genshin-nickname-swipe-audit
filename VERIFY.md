@@ -7,7 +7,8 @@ Full rebuild slice M2 (backend) + M3 (swipe UX) + M4 (design + admin) + M5 (brow
 - `npm run lint` — pass, 0 errors.
 - `npx tsc --noEmit` — pass.
 - `npm test` — 44/44 pass (logic 6, queue 11, ingest 8, server 19).
-- `npm run build` — pass (459 modules, dist hash index-C9BQFjpU.js).
+- `npm run build` — pass.
+- `npm run e2e` — 14/14 pass (mobile 390x844 touch + desktop 1440x900), TEST db only.
 - `node scripts/ingest.mjs` — 442 entities, 0 parse failures.
 
 ## Browser flows (Kimi WebBridge, tab 193732169, server 127.0.0.1:3101, TEST codes, TEST db data/test-m5.db — since deleted)
@@ -16,14 +17,14 @@ Full rebuild slice M2 (backend) + M3 (swipe UX) + M4 (design + admin) + M5 (brow
 |---|---|---|---|
 | 1 | Bare URL → only code input; wrong code rejected | PASS | Snapshot: gate only (Invite code + Enter). Wrong code → alert "That code did not work." |
 | 2 | `?code=` auto-login; reload stays logged in | PASS | After navigate with code, URL cleaned to `/` and deck visible. Reload → deck visible, no gate. |
-| 3 | Swipe right/left/up via buttons AND arrow keys; DB stores separate answers | PASS | Heard Albebe (button @e48), never Alfredo (ArrowLeft), unsure Bedo (ArrowUp). `my-votes`: heard/never/unsure rows. Drag: see Limitations. |
+| 3 | Swipe right/left/up via drag, buttons, arrow keys; DB stores separate answers | PASS (all three inputs). Playwright: trusted mouse drag (desktop) + CDP touch drag (mobile) commit heard/never/unsure, verified via my-votes. Buttons + ArrowLeft/Right/Up verified via WebBridge. Slow short drag springs back with no commit; fast flick commits. | e2e/drag.spec.ts (6 tests), M5 WebBridge evidence |
 | 4 | Change answer via tray chip; row replaced not duplicated | PASS | Chip Albebe → Never. DB: 3 rows, Albebe answer never. |
 | 5 | Reload restores marks/progress | PASS | After reload: chips show never/never/unsure, streak 1-day, still authed. |
 | 6 | Kill server mid-session, swipe, restart, queued vote syncs | PASS | Server killed, Dodo heard voted (queue len 1, optimistic mark). Restart + reload → queue [], DB has Dodo heard. |
 | 7 | 0-nickname entity = suggest-only; pending NOT a candidate; approve → appears | PASS | Help mode: "214 entries still need names", Aether suggest-only form. Suggested SkykidTest → pending, `/api/entities` Aether []. Admin approve → Aether `[{id f4e94182ac5d85af, provenance user-suggestion:1}]`. Deck 228→229, help 214→213. |
 | 8 | Duplicate suggestion blocked | PASS | Suggest "Albebe" for albedo → 409 `{match: albebe}`. Second pending "pogostick" → 409. |
 | 9 | Export matches votes; likely threshold | PASS | `/api/export` verified:false. Dodo heard 5/never 1/distinct 6 → likely true (5 ≥ 4.8). Albebe 1 voter → likely false. Unsure excluded. |
-| 10 | Layout desktop/mobile, no h-scroll, buttons reachable, console clean | PARTIAL | Desktop 1435px: scrollWidth == clientWidth (no h-overflow), tray side list (position static ≥1024px). Zero console errors across all flows (armed listener). Mobile 390px: NOT live-rendered (bridge has no resize); mobile-first CSS verified statically (sticky bottom tray, safe-area, 100dvh, focus-visible, reduced-motion). |
+| 10 | Layout desktop/mobile, no h-scroll, buttons reachable, console clean | PASS | Playwright mobile 390x844 + desktop 1440x900: scrollWidth == clientWidth on deck, help, admin; all visible buttons/inputs ≥44px tall (min-height rule added after first run flagged 16 sub-44px targets); tray inside viewport both sizes; zero console errors/pageerrors in every test. Screenshots: e2e/screenshots/{deck,tray,help,admin}-{mobile,desktop}.png (8 files). |
 
 ## Bugs found and fixed during M5
 1. `AnimatePresence mode="wait"` exit never completed in Edge: old card stayed mounted, blocking all navigation (votes saved, deck frozen). Fix attempt 1 (drop `mode`) still left the stale exiting card in DOM. Fix attempt 2 (remove `AnimatePresence`, key-remount) verified: single card in DOM, skip/chip/vote all advance. Committed `20e14a0`.
@@ -35,15 +36,13 @@ Full rebuild slice M2 (backend) + M3 (swipe UX) + M4 (design + admin) + M5 (brow
 - Direct API checks: my-votes, entities, suggest 409s, export, sqlite row counts.
 
 ## Known limitations (honest list)
-1. Drag gesture not end-to-end verified in a real pointer stream. Two synthetic PointerEvent attempts did not engage framer-motion's gesture pipeline (needs trusted pointer capture; this harness has no trusted-input action). Same `commit()` path verified via buttons + arrow keys; rotation/stamps/spring-back code present and unit-adjacent. Needs one manual drag on a phone before public use.
-2. No live 390px render (bridge exposes no viewport resize or screenshots). Mobile layout verified by CSS review only. Desktop live-verified.
-3. Download button clicked without JS errors; received file bytes not observable through the bridge (endpoint output verified via curl instead).
-4. Chip touch height ~36px (no explicit 44px minimum). Buttons are real focusable elements with visible focus styles.
-5. Research data carries the sources' own caveats (snippet-only/402 evidence, ambiguous abbreviations like VV/DM/OC) — preserved as `preliminary` + provenance, never upgraded. Vulgar joke candidates (e.g. Zhongli set) are kept as research candidates for voting; hide via admin reject if unwanted.
-6. `data/test-m5.db` deleted after M5. Real `data/votes.db` untouched (never created in this run).
+1. Download button clicked without JS errors; received file bytes verified via endpoint (`/api/export` curl) rather than the browser download itself.
+2. Research data carries the sources' own caveats (snippet-only/402 evidence, ambiguous abbreviations like VV/DM/OC) — preserved as `preliminary` + provenance, never upgraded. Vulgar joke candidates are kept as research candidates for voting; hide via admin reject if unwanted.
+3. `data/votes.db` (real) was never created or touched in any test run. E2E used `e2e/.tmp/e2e.db` (gitignored); M5 used `data/test-m5.db` (deleted after).
+4. E2E drag on mobile uses CDP touch events (trusted input) rather than a physical finger, and velocity is approximated by event timing. Same commit path as production gestures.
 
 ## Start it
 - `cp .env.example .env` and set `INVITE_CODE`, `ADMIN_CODE` (and `PORT` optionally, default 3000).
 - `npm install && npm run ingest && npm run build && npm start`.
 - Open `http://<host>:<port>/?code=<INVITE_CODE>`.
-- Tunnel: point it at the single `npm start` port (e.g. `cloudflared tunnel --url http://localhost:3000`). Do NOT expose until a manual phone drag test passes (limitation 1). Nightly `backups/` run inside the server process; admin export at `#/admin` + Download results.json.
+- Tunnel: point it at the single `npm start` port (e.g. `cloudflared tunnel --url http://localhost:3000`). Nightly `backups/` run inside the server process; admin export at `#/admin` + Download results.json.

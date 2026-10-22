@@ -563,3 +563,19 @@ button:disabled { cursor: not-allowed; opacity: 0.45; }
   }
   .swipe-card { touch-action: auto; }
 }
+
+/* Tappable targets: 44px minimum. */
+.mode-btn, .signout, .filter-btn, .blind-toggle, .flip-btn, .util-btn, .chip,
+.search-input, .where-chip, .suggest-send, .next-btn, .help-item,
+.gate-form button[type="submit"], .field input {
+  min-height: 44px;
+}
+.signout {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 12px;
+}
+.chip {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

@@ -45,3 +45,4 @@ Feature (primary) + Autonomous run (drive without stopping).
 | M3+M4 | swipe UX + Teyvat design + admin | browser-verified after fixes, committed `1c26a92` |
 | M5 fixes | AnimatePresence removal; ingest exclusion tightening | gate green, committed `20e14a0` |
 | M5 | 10 flows via WebBridge (8 pass, 1 partial-layout, drag untestable here) | VERIFY.md written |
+| E2E | Playwright suite: real drags, 44px targets, screenshots, zero console errors | 14/14 green, VERIFY.md flows 3+10 fully verified |
