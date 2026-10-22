@@ -8,6 +8,22 @@ describe('shared logic', () => {
     expect(nicknameId('ganyu', 'Cocogoat')).toBe(nicknameId('ganyu', '  cocogoat '));
   });
 
+  it('nickname ids match node:crypto sha1 (browser-safe implementation)', async () => {
+    const { createHash } = await import('node:crypto');
+    const cases = [
+      ['character:ganyu', 'Cocogoat'],
+      ['weapon:amosbow', 'Amos'],
+      ['artifact:archaicpetra', 'AP'],
+      ['x', 'héllo wörld ✓'],
+      ['e', 'a'.repeat(200)],
+    ];
+    for (const [entity, text] of cases) {
+      const norm = normalizeNicknameText(text);
+      const expected = createHash('sha1').update(`${entity}::${norm}`).digest('hex').slice(0, 16);
+      expect(nicknameId(entity, text)).toBe(expected);
+    }
+  });
+
   it('upserts votes without duplicating (voter+entity+nickname unique)', () => {
     const store = new Map();
     upsertVote(store, { voterId: 'v1', entityId: 'ganyu', nicknameId: 'abc', answer: 'heard' });
