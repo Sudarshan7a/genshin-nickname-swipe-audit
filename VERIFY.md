@@ -35,10 +35,19 @@ Full rebuild slice M2 (backend) + M3 (swipe UX) + M4 (design + admin) + M5 (brow
 - Server: `INVITE_CODE=… ADMIN_CODE=… VOTES_DB=… PORT=3101 SKIP_BACKUP=1 node server/index.js` (background, killed after).
 - Direct API checks: my-votes, entities, suggest 409s, export, sqlite row counts.
 
+## Go-live (2026-10-22, feat/rebuild)
+- Public URL: `https://nicknameswipe.mkgw5rnc5pej.opentunnel.xyz` (route `nicknameswipe`, background service, `npm run share`).
+- Outside checks (no secrets in this file): bare URL serves the app shell only; no/wrong code → 401; correct code → 442 entities; vote via tunnel persists and appears in my-votes; admin without code → 403, with code → 200; export `verified:false` with correct counts; DB confirmed clean (`{"v":0,"vt":0,"s":0}`) after deleting the probe vote + voter. Full log: `tools/golive-check.cjs` (reads codes from gitignored `.env`, prints PASS/FAIL only).
+- Real-browser check through the public URL: gate renders, `?code=` auto-login works, deck loads (Albedo/Albebe, blind mode, tray, 0/228, help 214).
+- Tunnel findings: this link intermittently kills single responses much above ~30KB (vendor JS never arrived). Fixed by (1) gzip on all API/static responses and (2) loading React vendors from pinned CDN import map (esm.sh) so the local bundle is 9KB. Re-verified loading through the tunnel after the change.
+- Rate limiting behind the tunnel: the tunnel is TCP-level, so every friend arrives from loopback with no forwarding header. Limits now key on voter id (per-friend buckets) with IP fallback; covered by two unit tests (XFF-separated + same-IP-separated).
+- Backup on startup fixed (used to run before the DB file existed → no copy). `backups/` now gets a copy on every boot plus nightly, newest 14.
+- Codes live only in gitignored `.env` (also the forget-me backup). Generate new ones with `node -e "console.log(require('crypto').randomBytes(12).toString('hex'))`.
+
 ## Known limitations (honest list)
 1. Download button clicked without JS errors; received file bytes verified via endpoint (`/api/export` curl) rather than the browser download itself.
 2. Research data carries the sources' own caveats (snippet-only/402 evidence, ambiguous abbreviations like VV/DM/OC) — preserved as `preliminary` + provenance, never upgraded. Vulgar joke candidates are kept as research candidates for voting; hide via admin reject if unwanted.
-3. `data/votes.db` (real) was never created or touched in any test run. E2E used `e2e/.tmp/e2e.db` (gitignored); M5 used `data/test-m5.db` (deleted after).
+3. `data/votes.db` (real) was never created or touched in any test run. E2E used `e2e/.tmp/e2e.db` (gitignored); M5 used `data/test-m5.db` (deleted after). Go-live probe votes were deleted; DB verified empty.
 4. E2E drag on mobile uses CDP touch events (trusted input) rather than a physical finger, and velocity is approximated by event timing. Same commit path as production gestures.
 
 ## Start it

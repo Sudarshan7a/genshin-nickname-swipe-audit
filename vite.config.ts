@@ -11,6 +11,16 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      // Vendor code loads from CDN (import map in index.html): the tunnel
+      // drops single responses much above ~30KB, and react-dom alone is
+      // bigger than that. App code stays local and tiny.
+      external: [/^react($|\/)/, /^react-dom($|\/)/, /^framer-motion$/],
+      output: {
+        // Keep the local app chunk small for the same reason.
+        manualChunks: undefined,
+      },
+    },
   }
 });
