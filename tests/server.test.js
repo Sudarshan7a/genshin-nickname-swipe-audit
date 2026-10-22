@@ -304,3 +304,33 @@ describe('admin suggestions list + suggest validation', () => {
     expect(ok.status).toBe(201);
   });
 });
+
+describe('rate limiting keys on the forwarded client IP', () => {
+  it('different X-Forwarded-For clients get independent buckets', async () => {
+    // exhaust the write limiter (300/min) for one spoofed client IP
+    for (let i = 0; i < 300; i += 1) {
+      const r = await request(app)
+        .post('/api/suggest')
+        .set(INV)
+        .set('x-voter-id', 'rl-a')
+        .set('X-Forwarded-For', '203.0.113.7')
+        .send({ entityId: emptyEntity.id, nickname: `Rl Nick A ${i}` });
+      expect(r.status).toBe(201);
+    }
+    const limited = await request(app)
+      .post('/api/suggest')
+      .set(INV)
+      .set('x-voter-id', 'rl-a')
+      .set('X-Forwarded-For', '203.0.113.7')
+      .send({ entityId: emptyEntity.id, nickname: 'Rl Nick A capped' });
+    expect(limited.status).toBe(429);
+    // a different client IP through the same tunnel is unaffected
+    const other = await request(app)
+      .post('/api/suggest')
+      .set(INV)
+      .set('x-voter-id', 'rl-b')
+      .set('X-Forwarded-For', '203.0.113.8')
+      .send({ entityId: emptyEntity.id, nickname: 'Rl Nick B fine' });
+    expect(other.status).toBe(201);
+  });
+});

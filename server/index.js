@@ -71,6 +71,12 @@ export function createApp(opts = {}) {
   const db = openDb(dbPath);
 
   const app = express();
+  // Behind the same-machine tunnel every socket arrives from loopback.
+  // Trust only loopback proxies so req.ip is the real client IP from
+  // X-Forwarded-For and rate limits are per friend, not per tunnel.
+  // If the proxy sends no forwarding header this falls back to the socket
+  // address, exactly as before.
+  app.set('trust proxy', 'loopback');
   app.use(express.json({ limit: '64kb' }));
 
   app.get('/api/health', (_req, res) => {
